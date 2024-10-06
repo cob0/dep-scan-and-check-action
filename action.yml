@@ -17,6 +17,14 @@ inputs:
     description: "Override project type if auto-detection is incorrect (https://github.com/owasp-dep-scan/dep-scan?tab=readme-ov-file#supported-languages-and-package-format)"
     required: false
     default: "java"
+  check_report_file:
+    description: "Report file location to check"
+    required: false
+    default: "/github/workspace/reports/sbom-java.vdr.json"
+  check_cvss_score_threshold:
+    description: "CVSS Score Threshold"
+    required: false
+    default: "0"
   thank_you:
     description: "Indicate you have sponsored OWASP dep-scan"
     required: false
@@ -24,7 +32,8 @@ inputs:
 
 runs:
   using: "docker"
-  image: "docker://ghcr.io/owasp-dep-scan/dep-scan:release-5.x"
+  image: "Dockerfile"
+  #image: "docker://ghcr.io/owasp-dep-scan/dep-scan:release-5.x"
   args:
     - "--src"
     - ${{ inputs.src }}
@@ -34,6 +43,9 @@ runs:
     - ${{ inputs.profile }}
     - "-t"
     - ${{ inputs.project_type }}
+    - "&& python dep_scan_report_checker.py"
+    - ${{ inputs.check_report_file_src }}
+    - ${{ inputs.check_cvss_score_threshold}}
 branding:
   icon: "check"
   color: "blue"
